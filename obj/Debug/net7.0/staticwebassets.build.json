@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "n9uODCObXsr7GBZj+qYN49Z33JOJfScm0o4oR7atIt8=",
+  "Source": "ActiveDirectoryManagement-API",
+  "BasePath": "_content/ActiveDirectoryManagement-API",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\ActiveDirectoryManagement-API.props" />
+</Project>
