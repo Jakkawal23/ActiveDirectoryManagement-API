@@ -13,6 +13,9 @@ namespace ActiveDirectoryManagement_API.Models.Domain.DB
         [StringLength(20)]
         public string EmployeeCode { get; set; }
 
+        [StringLength(20)]
+        public string PositionCode { get; set; }
+
         //[ForeignKey("DepartmentCode")]
         [StringLength(20)]
         public string DepartmentCode { get; set; }
@@ -30,6 +33,9 @@ namespace ActiveDirectoryManagement_API.Models.Domain.DB
         [StringLength(400)]
         public string FullName { get; set; }
 
+
+        [ForeignKey(nameof(PositionCode))]
+        public DbPosition? DbPosition { get; set; }
 
         [ForeignKey(nameof(DepartmentCode))]
         public DbDepartment? DbDepartment { get; set; }

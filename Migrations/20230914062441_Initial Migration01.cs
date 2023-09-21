@@ -1,11 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace ActiveDirectoryManagement_API.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigration : Migration
+    public partial class InitialMigration01 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -24,6 +25,22 @@ namespace ActiveDirectoryManagement_API.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_DbDepartments", x => x.DepartmentCode);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DbPositions",
+                columns: table => new
+                {
+                    PositionCode = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    PositionId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PositionNameTH = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    PositionNameEN = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Active = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DbPositions", x => x.PositionCode);
                 });
 
             migrationBuilder.CreateTable(
@@ -81,6 +98,7 @@ namespace ActiveDirectoryManagement_API.Migrations
                     EmployeeCode = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     EmployeeId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    PositionCode = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     DepartmentCode = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     TeamCode = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
@@ -95,6 +113,12 @@ namespace ActiveDirectoryManagement_API.Migrations
                         column: x => x.DepartmentCode,
                         principalTable: "DbDepartments",
                         principalColumn: "DepartmentCode",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_DbEmployees_DbPositions_PositionCode",
+                        column: x => x.PositionCode,
+                        principalTable: "DbPositions",
+                        principalColumn: "PositionCode",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_DbEmployees_DbTeams_TeamCode",
@@ -112,7 +136,10 @@ namespace ActiveDirectoryManagement_API.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     EmpCode = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     Password = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    StatusCode = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false)
+                    StatusCode = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    ApproveEmpCode = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ApproveDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -168,6 +195,11 @@ namespace ActiveDirectoryManagement_API.Migrations
                 column: "DepartmentCode");
 
             migrationBuilder.CreateIndex(
+                name: "IX_DbEmployees_PositionCode",
+                table: "DbEmployees",
+                column: "PositionCode");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_DbEmployees_TeamCode",
                 table: "DbEmployees",
                 column: "TeamCode");
@@ -213,6 +245,9 @@ namespace ActiveDirectoryManagement_API.Migrations
 
             migrationBuilder.DropTable(
                 name: "DbDepartments");
+
+            migrationBuilder.DropTable(
+                name: "DbPositions");
 
             migrationBuilder.DropTable(
                 name: "DbTeams");

@@ -18,8 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\Document\" />
-    <Folder Include="Models\DTO\Document\" />
+    <Folder Include="Migrations\" />
   </ItemGroup>
 
 </Project>

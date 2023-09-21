@@ -22,6 +22,13 @@ namespace ActiveDirectoryManagement_API.Models.Domain.Document
         [StringLength(20)]
         public string StatusCode { get; set; }
 
+        [StringLength(20)]
+        public string ApproveEmpCode { get; set; }
+
+        public DateTime CreateDate { get; set; }
+
+        public DateTime? ApproveDate { get; set; }
+
 
         [ForeignKey(nameof(EmpCode))]
         public DbEmployee? DbEmployee { get; set; }
@@ -29,7 +36,5 @@ namespace ActiveDirectoryManagement_API.Models.Domain.Document
         [ForeignKey(nameof(StatusCode))]
         public DbStatus? DbStatus { get; set; }
 
-        //public virtual DbEmployee Employee { get; set; }
-        //public virtual DbStatus Status { get; set; }
     }
 }
