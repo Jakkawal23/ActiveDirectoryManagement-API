@@ -54,8 +54,11 @@ namespace ActiveDirectoryManagement_API.Controllers.DB
         {
             if (dbContext.SuUsers.Where(x => EF.Functions.Collate(x.UserName, "Latin1_General_BIN") == request.UserName).FirstOrDefault() is SuUser oldUser)
             {
-                request.UserName = null;
-                return request;
+                if(request.EmployeeCode != oldUser.EmpCode)
+                {
+                    request.UserName = null;
+                    return request;
+                }
             }
                 if (dbContext.DbEmployees.Where(x => x.EmployeeCode == request.EmployeeCode).FirstOrDefault() is DbEmployee employee)
             {

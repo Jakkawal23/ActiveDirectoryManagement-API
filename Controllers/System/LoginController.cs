@@ -62,5 +62,19 @@ namespace ActiveDirectoryManagement_API.Controllers.System
             }
         }
 
+        [HttpGet("EmployeeProfile")]
+        public IActionResult GetEmployeeProfile(String UserName)
+        {
+            var user = dbContext.SuUsers.FirstOrDefault(x => x.UserName == UserName);
+            if (user != null)
+            {
+                return Ok(new { profileCode = user.ProfileCode });
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
     }
 }

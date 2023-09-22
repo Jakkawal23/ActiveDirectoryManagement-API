@@ -23,7 +23,7 @@ namespace ActiveDirectoryManagement_API.Models.Domain.Document
         public string StatusCode { get; set; }
 
         [StringLength(20)]
-        public string ApproveEmpCode { get; set; }
+        public string? ApproveEmpCode { get; set; }
 
         public DateTime CreateDate { get; set; }
 
