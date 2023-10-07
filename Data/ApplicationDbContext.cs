@@ -24,6 +24,7 @@ namespace ActiveDirectoryManagement_API.Data
         public DbSet<DbTeam> DbTeams { get; set; }
         public DbSet<DbStatus> DbStatuses { get; set; }
         public DbSet<DocumentPassword> DocumentPasswords { get; set; }
+        public DbSet<DocumentManagement> DocumentManagements { get; set; }
 
     }
 }

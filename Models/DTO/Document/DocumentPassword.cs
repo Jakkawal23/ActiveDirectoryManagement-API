@@ -29,6 +29,7 @@ namespace ActiveDirectoryManagement_API.Models.DTO.Document
         public string Password { get; set; }
 
         public string StatusCode { get; set; }
+
     }
 
     public class ChangePasswordList

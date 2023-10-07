@@ -46,7 +46,7 @@ namespace ActiveDirectoryManagement_API.Controllers.DB
                 Password = request.Password,
                 MobilePhoneNo = request.MobilePhoneNo,
                 Email = request.Email,
-                ProfileCode = "Admin",
+                ProfileCode = "EMP",
                 Active = true
             };
 

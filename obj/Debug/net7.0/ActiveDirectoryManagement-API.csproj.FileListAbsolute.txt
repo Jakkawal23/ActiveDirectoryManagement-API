@@ -74,3 +74,4 @@ C:\Users\Jakkawal phooluemsai\Desktop\Active-Directory-Management\ActiveDirector
 C:\Users\Jakkawal phooluemsai\Desktop\Active-Directory-Management\ActiveDirectoryManagement-API\obj\Debug\net7.0\ActiveDirectoryManagement-API.pdb
 C:\Users\Jakkawal phooluemsai\Desktop\Active-Directory-Management\ActiveDirectoryManagement-API\obj\Debug\net7.0\ActiveDirectoryManagement-API.genruntimeconfig.cache
 C:\Users\Jakkawal phooluemsai\Desktop\Active-Directory-Management\ActiveDirectoryManagement-API\obj\Debug\net7.0\ref\ActiveDirectoryManagement-API.dll
+C:\Users\Jakkawal phooluemsai\Desktop\Active-Directory-Management\ActiveDirectoryManagement-API\bin\Debug\net7.0\Novell.Directory.Ldap.NETStandard.dll

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Any;
+using System.Reflection.Emit;
 
 namespace ActiveDirectoryManagement_API.Controllers.Document
 {
@@ -40,10 +41,16 @@ namespace ActiveDirectoryManagement_API.Controllers.Document
                 ApproveDate = null,
             };
 
+            if (request.StatusCode == "COMPLETE")
+            {
+                documentPassword.ApproveEmpCode = request.EmpCode;
+                documentPassword.ApproveDate = DateTime.Now;
+            }
+
             await dbContext.DocumentPasswords.AddAsync(documentPassword);
             await dbContext.SaveChangesAsync();
 
-            return Ok(request);
+            return Ok(documentPassword);
         }
 
         [HttpGet("List")]
@@ -82,15 +89,68 @@ namespace ActiveDirectoryManagement_API.Controllers.Document
 
                 passwordLists.Add(passwordList);
             }
-            return passwordLists;
+            return passwordLists.OrderByDescending(x => x.CreateDate);
+        }
+
+        [HttpGet("Document")]
+        public IEnumerable<ChangePasswordList> GetPasswordDocument(string empCode)
+        {
+            List<ChangePasswordList> passwordLists = new List<ChangePasswordList>();
+
+            if (empCode == null)
+            {
+                return Enumerable.Empty<ChangePasswordList>();
+            }
+            var passwords = dbContext.DocumentPasswords.Where(x => x.EmpCode == empCode).ToList();
+            var employees = dbContext.DbEmployees.ToList();
+
+            foreach (var p in passwords)
+            {
+                ChangePasswordList passwordList = new ChangePasswordList
+                {
+                    PasswordId = p.PasswordId,
+                    EmpCode = p.EmpCode,
+                    StatusCode = p.StatusCode,
+                    ApproveEmpCode = p.ApproveEmpCode,
+                    CreateDate = p.CreateDate,
+                    ApproveDate = p.ApproveDate,
+                };
+
+                var employee = employees.FirstOrDefault(e => e.EmployeeCode == p.EmpCode);
+
+                if (employee != null)
+                {
+                    passwordList.Name = employee.Name;
+                    passwordList.LastName = employee.LastName;
+                    passwordList.PositionCode = employee.PositionCode;
+                    passwordList.DepartmentCode = employee.DepartmentCode;
+                }
+
+                passwordLists.Add(passwordList);
+            }
+            return passwordLists.OrderByDescending(x => x.CreateDate);
+        }
+
+        [HttpDelete("DeleteDocument")]
+        public String DeletePassDocument(int passwordId)
+        {
+            if (dbContext.DocumentPasswords.Where(x => x.PasswordId == passwordId).FirstOrDefault() is DocumentPassword docPass)
+            {
+                dbContext.DocumentPasswords.Remove(docPass);
+                dbContext.SaveChanges();
+                return passwordId.ToString();
+            }
+            return "Error delete password docuent";
         }
 
         [HttpGet("Approve")]
-        public DocumentPassword ApproveDocument(int documentId)
+        public DocumentPassword ApproveDocument(int documentId,string empCode)
         {
             if (dbContext.DocumentPasswords.Where(x => x.PasswordId == documentId).FirstOrDefault() is DocumentPassword document)
             {
                 document.StatusCode = "COMPLETE";
+                document.ApproveEmpCode = empCode;
+                document.ApproveDate = DateTime.Now;
                 dbContext.Set<DocumentPassword>().Attach(document);
                 dbContext.SaveChanges();
                 return document;
@@ -100,11 +160,13 @@ namespace ActiveDirectoryManagement_API.Controllers.Document
         }
 
         [HttpGet("Cancle")]
-        public DocumentPassword CancleDocument(int documentId)
+        public DocumentPassword CancleDocument(int documentId, string empCode)
         {
             if (dbContext.DocumentPasswords.Where(x => x.PasswordId == documentId).FirstOrDefault() is DocumentPassword document)
             {
                 document.StatusCode = "CANCEL";
+                document.ApproveEmpCode = empCode;
+                document.ApproveDate = DateTime.Now;
                 dbContext.Set<DocumentPassword>().Attach(document);
                 dbContext.SaveChanges();
                 return document;
