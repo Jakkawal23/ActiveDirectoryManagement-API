@@ -141,6 +141,8 @@ namespace ActiveDirectoryManagement_API.Models.DTO.DB
         public string LastName { get; set; }
 
         //User
+        public string Password { get; set; }
+
         public string UserName { get; set; }
 
         public string MobilePhoneNo { get; set; }

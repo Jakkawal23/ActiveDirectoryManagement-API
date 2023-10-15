@@ -8,7 +8,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Buffers.Text;
 using System.Linq;
+using System.Text;
 using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace ActiveDirectoryManagement_API.Controllers.DB
 {
@@ -150,12 +153,16 @@ namespace ActiveDirectoryManagement_API.Controllers.DB
                 employee.Name = request.Name;
                 employee.LastName = request.LastName;
                 employee.FullName = request.Name + "  " + request.LastName;
+
                 dbContext.Set<DbEmployee>().Attach(employee);
+
+                string hashedPassword = HashPassword(request.Password);
 
                 if (dbContext.SuUsers.Where(x => x.EmpCode == request.EmployeeCode).FirstOrDefault() is SuUser user)
                 {
                     user.UserName = request.UserName;
-                    user.Password = request.Password;
+                    //user.Password = request.Password;
+                    user.Password = hashedPassword;
                     user.MobilePhoneNo = request.MobilePhoneNo;
                     user.Email = request.Email;
                     user.ProfileCode = request.ProfileCode;
@@ -209,6 +216,20 @@ namespace ActiveDirectoryManagement_API.Controllers.DB
         public IEnumerable<SuProfile> GetProfiles()
         {
             return dbContext.SuProfiles.Where(x => x.Active).ToList().OrderBy(x => x.ProfileNameEN);
+        }
+
+        private string HashPassword(string password)
+        {
+            string hashedPassword;
+
+            // Hash the new password using SHA-256
+            byte[] newPasswordBytes = Encoding.UTF8.GetBytes(password);
+            using (SHA256 sha256 = SHA256.Create())
+            {
+                byte[] hashedPasswordBytes = sha256.ComputeHash(newPasswordBytes);
+                hashedPassword = Convert.ToBase64String(hashedPasswordBytes);
+            }
+            return hashedPassword;
         }
     }
 }

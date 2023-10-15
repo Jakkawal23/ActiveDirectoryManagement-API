@@ -5,6 +5,8 @@ using ActiveDirectoryManagement_API.Models.DTO.DB;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Text;
+using System.Security.Cryptography;
 
 namespace ActiveDirectoryManagement_API.Controllers.DB
 {
@@ -37,6 +39,7 @@ namespace ActiveDirectoryManagement_API.Controllers.DB
             if (users != null)
             {
                 employeeDetail.UserName = users.UserName;
+                employeeDetail.Password = users.Password;
                 employeeDetail.MobilePhoneNo = users.MobilePhoneNo;
                 employeeDetail.Email = users.Email;
             }
@@ -68,10 +71,13 @@ namespace ActiveDirectoryManagement_API.Controllers.DB
 
                 dbContext.Set<DbEmployee>().Attach(employee);
 
+                string hashedPassword = HashPassword(request.Password);
+
                 if (dbContext.SuUsers.Where(x => x.EmpCode == request.EmployeeCode).FirstOrDefault() is SuUser user)
                 {
                     //user.EmpCode = request.EmployeeCode;
-                    user.UserName = request.UserName;
+                    //user.UserName = request.UserName;
+                    user.Password = hashedPassword;
                     user.MobilePhoneNo = request.MobilePhoneNo;
                     user.Email = request.Email;
                     dbContext.Set<SuUser>().Attach(user);
@@ -101,6 +107,20 @@ namespace ActiveDirectoryManagement_API.Controllers.DB
         public IEnumerable<DbTeam> GetTeams()
         {
             return dbContext.DbTeams.Where(x => x.Active).ToList().OrderBy(x => x.TeamNameEN);
+        }
+
+        private string HashPassword(string password)
+        {
+            string hashedPassword;
+
+            // Hash the new password using SHA-256
+            byte[] newPasswordBytes = Encoding.UTF8.GetBytes(password);
+            using (SHA256 sha256 = SHA256.Create())
+            {
+                byte[] hashedPasswordBytes = sha256.ComputeHash(newPasswordBytes);
+                hashedPassword = Convert.ToBase64String(hashedPasswordBytes);
+            }
+            return hashedPassword;
         }
     }
 }

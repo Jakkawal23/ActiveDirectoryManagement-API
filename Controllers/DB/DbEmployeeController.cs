@@ -2,11 +2,14 @@
 using ActiveDirectoryManagement_API.Models.Domain.DB;
 using ActiveDirectoryManagement_API.Models.Domain.SU;
 using ActiveDirectoryManagement_API.Models.DTO.DB;
+using Azure.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Reflection.Emit;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace ActiveDirectoryManagement_API.Controllers.DB
 {
@@ -28,6 +31,9 @@ namespace ActiveDirectoryManagement_API.Controllers.DB
                 DbEmployee employeesOld = new DbEmployee();
                 return Ok(employeesOld);
             }
+
+            string hashedPassword = HashPassword(request.Password);
+
             var employee = new DbEmployee
             {
                 EmployeeCode = request.EmployeeCode,
@@ -43,7 +49,8 @@ namespace ActiveDirectoryManagement_API.Controllers.DB
             {
                 EmpCode = request.EmployeeCode,
                 UserName = request.EmployeeCode,
-                Password = request.Password,
+                //Password = request.Password,
+                Password = hashedPassword,
                 MobilePhoneNo = request.MobilePhoneNo,
                 Email = request.Email,
                 ProfileCode = "EMP",
@@ -71,11 +78,14 @@ namespace ActiveDirectoryManagement_API.Controllers.DB
 
                 dbContext.Set<DbEmployee>().Attach(employee);
 
+                string hashedPassword = HashPassword(request.Password);
+
                 if (dbContext.SuUsers.Where(x => x.EmpCode == request.EmployeeCode).FirstOrDefault() is SuUser user)
                 {
                     //user.EmpCode = request.EmployeeCode;
                     user.UserName = request.EmployeeCode;
-                    user.Password = request.Password;
+                    //user.Password = request.Password;
+                    user.Password = hashedPassword;
                     user.MobilePhoneNo = request.MobilePhoneNo;
                     user.Email = request.Email;
                     //user.ProfileCode = "Admin";
@@ -107,6 +117,20 @@ namespace ActiveDirectoryManagement_API.Controllers.DB
         public IEnumerable<DbTeam> GetTeams()
         {
             return dbContext.DbTeams.Where(x => x.Active).ToList().OrderBy(x => x.TeamNameEN);
+        }
+
+        private string HashPassword(string password)
+        {
+            string hashedPassword;
+
+            // Hash the new password using SHA-256
+            byte[] newPasswordBytes = Encoding.UTF8.GetBytes(password);
+            using (SHA256 sha256 = SHA256.Create())
+            {
+                byte[] hashedPasswordBytes = sha256.ComputeHash(newPasswordBytes);
+                hashedPassword = Convert.ToBase64String(hashedPasswordBytes);
+            }
+            return hashedPassword;
         }
     }
 }
